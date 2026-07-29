@@ -16,7 +16,7 @@ android {
         versionName '1.0'
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        buildConfigField 'String', 'DEFAULT_API_URL', '"http://10.0.2.2:8080/api/games"'
+        buildConfigField 'String', 'DEFAULT_API_URL', '"https://orange-xylophone-9j96j6xjw4c76xx-8080.app.github.dev/api/games"'
     }
 
     buildFeatures {
