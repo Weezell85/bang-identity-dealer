@@ -62,6 +62,18 @@ curl -sS http://localhost:8080/api/games/ABC234/role \
 
 Invalid input and game-state errors use RFC 9457 problem-details JSON with an appropriate `400`, `401`, `404`, or `409` response status.
 
+## Android app
+
+The `androidApp` module contains a Kotlin and Jetpack Compose companion app. It supports creating or joining a game, an automatically refreshing lobby, host-only dealing, and a private role-reveal dialog. The debug app connects to `http://10.0.2.2:8080/api/games`, which maps an Android emulator to the backend running on the development machine.
+
+Start the backend, launch an emulator, and then build or install the app from Android Studio. From the command line (with Android SDK 35 configured):
+
+```bash
+./gradlew :androidApp:installDebug
+```
+
+For a physical device or deployed backend, update `DEFAULT_API_URL` in `androidApp/build.gradle`. Production deployments should use HTTPS; cleartext traffic is intentionally limited to emulator development hosts.
+
 ## Role distributions
 
 | Players | Sheriff | Deputy | Outlaw | Renegade |
