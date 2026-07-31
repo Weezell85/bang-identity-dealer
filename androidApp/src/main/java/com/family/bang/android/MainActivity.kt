@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,12 +20,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -245,93 +242,22 @@ private fun RoleDialog(role: String, hide: () -> Unit) {
 
 @Composable
 private fun RoleCard(role: String) {
-    val accent = when (role) {
-        "SHERIFF" -> Color(0xFFD69A2D)
-        "DEPUTY" -> Color(0xFF3F718C)
-        "OUTLAW" -> Color(0xFF9C3428)
-        else -> Color(0xFF53654A)
+    val imageResource = when (role) {
+        "SHERIFF" -> R.drawable.sheriff
+        "DEPUTY" -> R.drawable.deputy
+        "OUTLAW" -> R.drawable.outlaw
+        else -> R.drawable.renegade
     }
-    val subtitle = when (role) {
-        "SHERIFF" -> "Keep the peace"
-        "DEPUTY" -> "Protect the Sheriff"
-        "OUTLAW" -> "Bring down the law"
-        else -> "Stand alone"
-    }
-
     Card(
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF2D99B)),
         elevation = CardDefaults.cardElevation(8.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Canvas(Modifier.fillMaxWidth().height(190.dp)) {
-                drawRoleArtwork(accent)
-            }
-            Column(
-                modifier = Modifier.fillMaxWidth().background(accent).padding(vertical = 14.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    role.replace('_', ' '), color = Color.White, fontSize = 30.sp,
-                    fontWeight = FontWeight.Black, letterSpacing = 2.sp,
-                )
-                Text(subtitle.uppercase(), color = Color.White.copy(alpha = .8f), fontSize = 11.sp, letterSpacing = 1.5.sp)
-            }
-        }
-    }
-}
-
-private fun DrawScope.drawRoleArtwork(accent: Color) {
-    val w = size.width
-    val h = size.height
-    drawRect(Color(0xFFECCB83))
-    drawCircle(Color(0xFFFFE2A3), radius = h * .29f, center = Offset(w * .72f, h * .34f))
-
-    val distant = Path().apply {
-        moveTo(0f, h * .67f)
-        lineTo(w * .20f, h * .43f)
-        lineTo(w * .36f, h * .65f)
-        lineTo(w * .53f, h * .49f)
-        lineTo(w * .72f, h * .69f)
-        lineTo(w, h * .48f)
-        lineTo(w, h)
-        lineTo(0f, h)
-        close()
-    }
-    drawPath(distant, Color(0xFFC77D45).copy(alpha = .75f))
-    drawOval(accent.copy(alpha = .85f), topLeft = Offset(-w * .10f, h * .75f), size = Size(w * 1.2f, h * .45f))
-
-    // A bold, original western character silhouette gives the reveal the feel of a dealt role card.
-    val ink = Color(0xFF321B14)
-    drawCircle(ink, radius = h * .12f, center = Offset(w * .5f, h * .48f))
-    drawOval(ink, topLeft = Offset(w * .34f, h * .35f), size = Size(w * .32f, h * .08f))
-    drawRect(ink, topLeft = Offset(w * .42f, h * .29f), size = Size(w * .16f, h * .10f))
-    val coat = Path().apply {
-        moveTo(w * .40f, h * .54f)
-        lineTo(w * .31f, h)
-        lineTo(w * .69f, h)
-        lineTo(w * .60f, h * .54f)
-        close()
-    }
-    drawPath(coat, ink)
-    drawLine(Color(0xFFECCB83), Offset(w * .5f, h * .61f), Offset(w * .5f, h), strokeWidth = 3f)
-
-    // Star-shaped badge echoes classic frontier iconography without reproducing game artwork.
-    val star = Path()
-    val center = Offset(w * .57f, h * .68f)
-    val outer = h * .045f
-    val inner = outer * .43f
-    repeat(10) { index ->
-        val angle = -Math.PI / 2 + index * Math.PI / 5
-        val radius = if (index % 2 == 0) outer else inner
-        val point = Offset(
-            center.x + (kotlin.math.cos(angle) * radius).toFloat(),
-            center.y + (kotlin.math.sin(angle) * radius).toFloat(),
+        Image(
+            painter = painterResource(imageResource),
+            contentDescription = "$role role card",
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth().aspectRatio(250f / 389f),
         )
-        if (index == 0) star.moveTo(point.x, point.y) else star.lineTo(point.x, point.y)
     }
-    star.close()
-    drawPath(star, Color(0xFFFFD05A))
-    drawPath(star, ink, style = Stroke(width = 2f))
 }
