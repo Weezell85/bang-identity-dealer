@@ -31,7 +31,7 @@ List the codes for all games currently held in memory. The Android app uses this
 endpoint to populate the game-code drop-down on its join form.
 
 ```bash
-curl -sS http://localhost:8080/api/games
+curl -sS http://localhost:8080/api/games/codes
 # {"gameCodes":["ABC234"]}
 ```
 

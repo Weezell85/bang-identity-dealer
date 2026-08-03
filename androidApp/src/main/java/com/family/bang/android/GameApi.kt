@@ -12,7 +12,7 @@ data class JoinedPlayer(val playerName: String, val playerToken: String)
 class ApiException(message: String) : Exception(message)
 
 class GameApi(private val baseUrl: String) {
-    suspend fun gameCodes(): List<String> = request("") { json ->
+    suspend fun gameCodes(): List<String> = request("/codes") { json ->
         json.getJSONArray("gameCodes").let { array -> List(array.length()) { array.getString(it) } }
     }
 
