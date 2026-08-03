@@ -25,6 +25,15 @@ class GameServiceTest {
     }
 
     @Test
+    void listsExistingGameCodesInSortedOrder() {
+        var first = service.createGame();
+        var second = service.createGame();
+
+        assertThat(service.gameCodes()).containsExactlyInAnyOrder(first.gameCode(), second.gameCode());
+        assertThat(service.gameCodes()).isSorted();
+    }
+
+    @Test
     void onlyHostCanDealAndDealCanHappenOnlyOnce() {
         var game = service.createGame();
         List<GameService.JoinedPlayer> players = joinPlayers(game.gameCode(), 4);

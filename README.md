@@ -27,6 +27,14 @@ curl -sS -X POST http://localhost:8080/api/games
 # {"gameCode":"ABC234","hostToken":"..."}
 ```
 
+List the codes for all games currently held in memory. The Android app uses this
+endpoint to populate the game-code drop-down on its join form.
+
+```bash
+curl -sS http://localhost:8080/api/games
+# {"gameCodes":["ABC234"]}
+```
+
 Join four to seven players (repeat with a distinct name for each person). Each player should privately save their own token.
 
 ```bash

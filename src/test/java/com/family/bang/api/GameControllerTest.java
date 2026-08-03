@@ -28,6 +28,11 @@ class GameControllerTest {
                 .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString());
         String code = game.get("gameCode").asText();
         String hostToken = game.get("hostToken").asText();
+        mvc.perform(get("/api/games"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameCodes").isArray())
+                .andExpect(jsonPath("$.gameCodes", org.hamcrest.Matchers.hasItem(code)))
+                .andExpect(jsonPath("$.hostToken").doesNotExist());
         List<String> playerTokens = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
             JsonNode player = json.readTree(mvc.perform(post("/api/games/{code}/players", code)

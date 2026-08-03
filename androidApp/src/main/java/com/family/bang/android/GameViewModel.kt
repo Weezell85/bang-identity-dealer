@@ -13,6 +13,7 @@ data class GameUiState(
     val screen: Screen = Screen.HOME,
     val gameCode: String = "",
     val playerName: String = "",
+    val availableGameCodes: List<String> = emptyList(),
     val players: List<String> = emptyList(),
     val isHost: Boolean = false,
     val loading: Boolean = false,
@@ -27,6 +28,17 @@ class GameViewModel(private val api: GameApi = GameApi(BuildConfig.DEFAULT_API_U
     private var hostToken: String? = null
     private var playerToken: String? = null
     private var polling: Job? = null
+
+    init {
+        refreshGameCodes()
+    }
+
+    fun refreshGameCodes() {
+        viewModelScope.launch {
+            runCatching { api.gameCodes() }
+                .onSuccess { state.value = state.value.copy(availableGameCodes = it) }
+        }
+    }
 
     fun createAndJoin(name: String) = launchRequest {
         requireName(name)
@@ -64,6 +76,7 @@ class GameViewModel(private val api: GameApi = GameApi(BuildConfig.DEFAULT_API_U
         hostToken = null
         playerToken = null
         state.value = GameUiState()
+        refreshGameCodes()
     }
 
     private suspend fun enterLobby(code: String, player: JoinedPlayer, isHost: Boolean) {

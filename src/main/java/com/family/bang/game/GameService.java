@@ -30,6 +30,10 @@ public class GameService {
         return new CreatedGame(game.code, game.hostToken);
     }
 
+    public List<String> gameCodes() {
+        return games.keySet().stream().sorted().toList();
+    }
+
     public JoinedPlayer join(String code, String rawName) {
         Game game = game(code);
         String name = rawName.trim();
