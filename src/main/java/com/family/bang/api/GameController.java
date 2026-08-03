@@ -21,6 +21,9 @@ public class GameController {
     @ResponseStatus(HttpStatus.CREATED)
     public GameService.CreatedGame create() { return games.createGame(); }
 
+    @GetMapping
+    public GamesResponse list() { return new GamesResponse(games.gameCodes()); }
+
     @PostMapping("/{gameCode}/players")
     @ResponseStatus(HttpStatus.CREATED)
     public GameService.JoinedPlayer join(@PathVariable String gameCode, @Valid @RequestBody JoinRequest request) {
@@ -54,6 +57,7 @@ public class GameController {
     }
 
     public record JoinRequest(@NotBlank @Size(max = 40) String playerName) {}
+    public record GamesResponse(List<String> gameCodes) {}
     public record LobbyResponse(List<String> players) {}
     public record RoleResponse(Role role) {}
 }

@@ -78,7 +78,13 @@ private fun BangApp(vm: GameViewModel = viewModel()) {
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             when (ui.screen) {
-                Screen.HOME -> HomeScreen(ui.loading, vm::createAndJoin, vm::join)
+                Screen.HOME -> HomeScreen(
+                    ui.loading,
+                    ui.availableGameCodes,
+                    vm::refreshGameCodes,
+                    vm::createAndJoin,
+                    vm::join,
+                )
                 Screen.LOBBY -> LobbyScreen(ui, vm::refresh, vm::deal, vm::revealRole, vm::hideRole, vm::leave)
             }
             if (ui.loading) LinearProgressIndicator(Modifier.fillMaxWidth().align(Alignment.TopCenter))
@@ -87,13 +93,17 @@ private fun BangApp(vm: GameViewModel = viewModel()) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun HomeScreen(
     loading: Boolean,
+    availableGameCodes: List<String>,
+    refreshGameCodes: () -> Unit,
     create: (String) -> Unit,
     join: (String, String) -> Unit,
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var code by rememberSaveable { mutableStateOf("") }
+    var codeMenuExpanded by rememberSaveable { mutableStateOf(false) }
     val focus = LocalFocusManager.current
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
@@ -134,16 +144,52 @@ private fun HomeScreen(
                     Text("  OR JOIN  ", color = Ink.copy(alpha = .55f), fontSize = 12.sp)
                     HorizontalDivider(Modifier.weight(1f))
                 }
-                OutlinedTextField(
-                    value = code,
-                    onValueChange = { code = it.filter(Char::isLetterOrDigit).take(6).uppercase() },
-                    placeholder = { Text("6-character game code") },
-                    label = { Text("Game code") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { focus.clearFocus(); join(code, name) }),
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                ExposedDropdownMenuBox(
+                    expanded = codeMenuExpanded,
+                    onExpandedChange = {
+                        codeMenuExpanded = it
+                        if (it) refreshGameCodes()
+                    },
+                ) {
+                    OutlinedTextField(
+                        value = code,
+                        onValueChange = {
+                            code = it.filter(Char::isLetterOrDigit).take(6).uppercase()
+                            codeMenuExpanded = false
+                        },
+                        placeholder = { Text("6-character game code") },
+                        label = { Text("Game code") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { focus.clearFocus(); join(code, name) }),
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = codeMenuExpanded)
+                        },
+                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = codeMenuExpanded,
+                        onDismissRequest = { codeMenuExpanded = false },
+                    ) {
+                        if (availableGameCodes.isEmpty()) {
+                            DropdownMenuItem(
+                                text = { Text("No games available") },
+                                onClick = {},
+                                enabled = false,
+                            )
+                        }
+                        availableGameCodes.forEach { gameCode ->
+                            DropdownMenuItem(
+                                text = { Text(gameCode, fontWeight = FontWeight.Bold, letterSpacing = 2.sp) },
+                                onClick = {
+                                    code = gameCode
+                                    codeMenuExpanded = false
+                                    focus.clearFocus()
+                                },
+                            )
+                        }
+                    }
+                }
                 OutlinedButton(
                     onClick = { focus.clearFocus(); join(code, name) },
                     enabled = !loading,
