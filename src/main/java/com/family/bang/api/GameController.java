@@ -21,7 +21,7 @@ public class GameController {
     @ResponseStatus(HttpStatus.CREATED)
     public GameService.CreatedGame create() { return games.createGame(); }
 
-    @GetMapping
+    @GetMapping("/codes")
     public GamesResponse list() { return new GamesResponse(games.gameCodes()); }
 
     @PostMapping("/{gameCode}/players")
