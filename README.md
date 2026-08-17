@@ -9,7 +9,9 @@ A small Spring Boot REST backend for privately dealing the base-game roles in **
   wrapper scripts and configuration, but intentionally does not track the binary
   `gradle/wrapper/gradle-wrapper.jar`.
 
-Generate the missing wrapper JAR locally, then start the application:
+The backend is the root Gradle project; there is no separate Maven `backend`
+module. Generate the missing wrapper JAR locally, then start the application
+from the repository root:
 
 ```bash
 gradle wrapper --gradle-version 8.10.2
@@ -17,6 +19,25 @@ gradle wrapper --gradle-version 8.10.2
 ```
 
 The API is then available at `http://localhost:8080/api/games`.
+
+### Java version troubleshooting
+
+Confirm that the JDK used by Gradle is Java 17 or newer before starting the
+backend:
+
+```bash
+java -version
+./gradlew --version
+```
+
+If Maven reports `release version 21 not supported`, Maven is running on a JDK
+older than the Java release requested by that Maven project. That message does
+not come from this repository's build: this project uses Gradle and targets
+Java 17 in `build.gradle`. Run `./gradlew bootRun` from this repository's root
+instead of `mvn spring-boot:run` from a `backend` directory. If you intended to
+run a different Maven-based checkout, install JDK 21 and point `JAVA_HOME` at
+it, or change that checkout's compiler release only if its source and
+dependencies support the older JDK.
 
 ## API walkthrough
 
